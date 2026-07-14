@@ -34,7 +34,7 @@ var Settings = {
   ShowHoodNames: { enabled: false, draw: false },
   GhostInfo: { enabled: false, draw: false },
   SmartCraft: { enabled: false, draw: true, key: "NONE", keyMode: "press", select: "AMETHYST_SPIKE", hm: 255 },
-  Tokens: { enabled: false, token: null, tokenid: null },
+  Tokens: { enabled: false, active: false, token: "", tokenid: "" },
   Macro: { key: "KeyO", recording: false, playing: false }
 };
 var _origToken = null, _origTokenId = null;
@@ -33983,7 +33983,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     k[f.U4] = "Зимний Капюшон;Вы можете украсть что-то, если;- Ночь;- Вы ничего не носите;- Если вас не тронули в течение четырёх секунд;- Вы не рядом с огнём;- Вы не можете ничего украсть у крестьянской туники;Защищает от холода вне воды.".split(";");
     k[f._A] = ["Зимняя Крестьянская Туника", "Ваши растения растут быстрее", "Защищает от холода вне воды."];
     k[f.qi] = ["Акваланг", "Вы быстрее передвигаетесь по воде", "Тепло в воде", "Защита от игроков: 2, Защита от животных: 8"];
-    k[f.j4] = ["Супер Акваланг", "Вы очень быстро передвигаетесь по воде", "Тепло в воде", "Защита от игроков: 4, Защита от ж��вотных: 16"];
+    k[f.j4] = ["Супер Акваланг", "Вы очень быстро передвигаетесь по воде", "Тепло в воде", "Защита от игроков: 4, Защита от животных: 16"];
     k[f.Yt] = ["Шар Дракона", "Даётся за квест"];
     k[f.lV] = ["Сердце Дракона", "Превращает вас в призрака после смерти!", "Вы призрак на 60 секунд", "Найдите камень воскрешения"];
     k[f.tb] = ["Зелёный Драгоценный Камень", "Вы без читов, правильно?"];
@@ -34935,7 +34935,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     k[f.zv] = ["Ohrwärmer", "Eine Art kleiner chapka.", "Hält dich warm außerhalb von Wasser und Winter"];
     k[f.Bq] = ["Chapka", "Auch Mantel genannt.", "Hält dich warm außerhalb von Wasser und Winter"];
     k[f.hj] = ["Winterschaal und Kappe", "Sehr angenehm", "Sehr Warm"];
-    k[f.XO] = ["Bauer", "Deine Pflanzen wachsen schneller", "H��lt dich warm außerhalb von Wasser und Winter"];
+    k[f.XO] = ["Bauer", "Deine Pflanzen wachsen schneller", "Hält dich warm außerhalb von Wasser und Winter"];
     k[f.U4] = "Winterkapuze;Du bist ein Wilder Schurke;Du kannst jemand bestehlen solange:;1) Es nacht ist;2) Du nichts trägst;3) dich niemand für vier Sekunden berührt hat;4) Du nicht in der Nähe eines Feuers bist;5) Dein Ziel keine Winterbauernkleidung trägt;Hält dich warm außerhalb von Wasser und Winter".split(";");
     k[f._A] = ["Winterbauern", "Deine Pflanzen wachsen deutlich schneller", "Hält dich warm außerhalb von Wasser und Winter"];
     k[f.qi] = ["Tauchermaske", "Du bist schneller im Wasser", "Hält dich warm im Wasser", "Verteidigung gegen Spieler: 2, Verteidigung gegen Tiere: 8"];
@@ -68645,6 +68645,13 @@ window.send = function(data) {
     _modKeysDown[evt.code] = false;
   });
 
+  document.addEventListener("keydown", function(evt) {
+    if (document.activeElement && document.activeElement.closest && document.activeElement.closest(".guify-container")) { evt.stopPropagation(); }
+  }, true);
+  document.addEventListener("keyup", function(evt) {
+    if (document.activeElement && document.activeElement.closest && document.activeElement.closest(".guify-container")) { evt.stopPropagation(); }
+  }, true);
+
   var _guiScript = document.createElement("script");
   _guiScript.src = "https://unpkg.com/guify@0.12.0/lib/guify.min.js";
   _guiScript.onload = function() {
@@ -68765,8 +68772,34 @@ window.send = function(data) {
           navigator.clipboard.writeText(_tkStr);
         }
       },
-      { type: "text", label: "Token", object: Settings.Tokens, property: "token", listenMode: "input", onChange: function(data) { if (!_origToken && m.hF) _origToken = m.hF; if (data && data.length > 0) { m.hF = data; } else { if (_origToken) m.hF = _origToken; } } },
-      { type: "text", label: "TokenID", object: Settings.Tokens, property: "tokenid", listenMode: "input", onChange: function(data) { if (!_origTokenId && m.eY) _origTokenId = m.eY; if (data && data.length > 0) { m.eY = data; } else { if (_origTokenId) m.eY = _origTokenId; } } }
+      { type: "checkbox", label: "Token Join", object: Settings.Tokens, property: "active", onChange: function() {
+          if (Settings.Tokens.active) {
+            if (!_origToken) _origToken = m.hF;
+            if (!_origTokenId) _origTokenId = m.eY;
+            if (Settings.Tokens.token && Settings.Tokens.token.length > 0) m.hF = Settings.Tokens.token;
+            if (Settings.Tokens.tokenid && Settings.Tokens.tokenid.length > 0) m.eY = Settings.Tokens.tokenid;
+          } else {
+            if (_origToken) m.hF = _origToken;
+            if (_origTokenId) m.eY = _origTokenId;
+          }
+        }
+      },
+      { type: "text", label: "Token", object: Settings.Tokens, property: "token", listenMode: "input", onChange: function(data) {
+          Settings.Tokens.token = data || "";
+          if (Settings.Tokens.active && data && data.length > 0) {
+            if (!_origToken) _origToken = m.hF;
+            m.hF = data;
+          }
+        }
+      },
+      { type: "text", label: "TokenID", object: Settings.Tokens, property: "tokenid", listenMode: "input", onChange: function(data) {
+          Settings.Tokens.tokenid = data || "";
+          if (Settings.Tokens.active && data && data.length > 0) {
+            if (!_origTokenId) _origTokenId = m.eY;
+            m.eY = data;
+          }
+        }
+      }
     ], { folder: "Tokens" });
     function _macroPlay() {
       if (!_macroTape.length) return;
