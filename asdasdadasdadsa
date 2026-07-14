@@ -1,6 +1,4 @@
 (function () {
-// === MOD SETTINGS ===
-console.log("[MOD] ===== MODDED CLIENT LOADED =====");
 var tc = 0;
 var Settings = {
   AutoBook: { enabled: false, draw: true },
@@ -39,6 +37,7 @@ var Settings = {
   Tokens: { enabled: false, token: null, tokenid: null },
   Macro: { key: "KeyO", recording: false, playing: false }
 };
+var _origToken = null, _origTokenId = null;
 var _Timers = { HealTimer: 0, GaugeTimer: 0 };
 var _macroTape = [], _macroT0 = 0, _macroPlayIdx = 0, _macroPlayT0 = 0;
 window._myBuilds = {};
@@ -22391,8 +22390,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     }
     p.fillStyle = "#074A87";
     p.fillRect(this.translate.x + y * 757, this.translate.y + y * 17, m.G3.cH.x * 178 * y, y * 18);
-        // === SHOWHP + TIMERS ===
-    if (Settings.ShowHP.enabled) {
+        if (Settings.ShowHP.enabled) {
       p.save();
       p.lineWidth = 7;
       p.font = "34px Baloo Paaji";
@@ -23333,7 +23331,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     }
   }
   ;
-  /* === DRAW PLAYER FUNCTION === */
   function draw_players() {
     if (this.v4) {
       for (var a = 0; a < this.bubbles.length; a++) {
@@ -26393,7 +26390,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     document.getElementById("amethyst_number").addEventListener("keypress", this.uN.keypress, false);
     this.uN.WE.width = 460;
     this.uN.WE.height = 220;
-    /* REMOVED: keypress block on number inputs */
+    
     this.options = {
       open: false,
       id: document.getElementById("option_in_game"),
@@ -29138,7 +29135,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
       for (var Ga = q.bv[w.Wo], x = 0; x < Ga.length; x++) {
         M(Ga[x], e.Wo);
       }
-      /* === DRAW PLAYERS (ORIGINAL POS) === */
       if (!Settings.PlayerOnTop.enabled) { Ca = q.bv[w.Nt];
       if (q.mode === z.x_ || q.mode === z.S$ || q.mode === z.AW || q.mode === z.zL || q.mode === z.A9) {
         for (x = 0; x < Ca.length; x++) {
@@ -29153,7 +29149,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
           }
         }
       } }
-      /* === END PLAYERS ORIGINAL === */
       Ga = q.bv[w.Wo];
       for (x = 0; x < Ga.length; x++) {
         M(Ga[x], e.lm);
@@ -29277,7 +29272,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
         M(fa[x], e.Xf);
         fa[x].Gl(fa[x].info);
       }
-      if(!window._spikeDbg){window._spikeDbg=true;console.log("[SPIKE] render reached spike section");}
       for (var ha = q.bv[w.a0], x = 0; x < ha.length; x++) {
         M(ha[x], _csId(10000, 10001, e.a0, ha[x].KG, ha[x]));
         ha[x].Gl(ha[x].info);
@@ -29312,7 +29306,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
       }
       if (!Settings.TotemOnTop.enabled) { for (var eb = q.bv[w.ts], x = 0; x < eb.length; x++) {
         M(eb[x], e.ts);
-        // === TOTEM INFO OVERLAY (inline, skipped when late-pass active) ===
         if (Settings.TotemInfo.enabled) {
           var _te = eb[x];
           var _tOwner = _te.KG;
@@ -29399,7 +29392,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
       for (x = 0; x < Ua.length; x++) {
         Eb(Ua[x]);
       }
-      /* === DRAW ROOFS === */
       for (var jb = q.bv[w.E1], x = 0; x < jb.length; x++) {
         M(jb[x], e.E1);
       }
@@ -29412,7 +29404,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
       if (Settings.TotemOnTop.enabled) { for (var _teb = q.bv[w.ts], _tx = 0; _tx < _teb.length; _tx++) { M(_teb[_tx], e.ts); } }
       if (Settings.ChestOnTop.enabled) { for (var _cbb = q.bv[w.jq], _cbx = 0; _cbx < _cbb.length; _cbx++) { M(_cbb[_cbx]); } for (var _ccb = q.bv[w.Lf], _cx = 0; _cx < _ccb.length; _cx++) { for (var _cd = 0; _cd < _ccb[_cx].info; _cd++) { M(_ccb[_cx].a_[_cd], e.Lf); } } }
       if (Settings.Xray.enabled) { p.globalAlpha = 1; }
-      /* === DRAW PLAYERS (relocated after roofs) === */
+      var __mkRelocPlayers=1;
       if (Settings.PlayerOnTop.enabled) { Ca = q.bv[w.Nt];
       if (q.mode === z.x_ || q.mode === z.S$ || q.mode === z.AW || q.mode === z.zL || q.mode === z.A9) {
         for (x = 0; x < Ca.length; x++) {
@@ -29427,8 +29419,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
           }
         }
       } }
-      /* === END PLAYERS RELOCATED === */
-      // ChestInfo on top
+      var __mkRelocPlayersEnd=1;
       if (Settings.ChestInfo.enabled) {
         p.save();
         p.font = "20px Baloo Paaji";
@@ -29452,7 +29443,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
         }
         p.restore();
       }
-      // TotemInfo on top
       if (Settings.TotemInfo.enabled) {
         p.save();
         p.textAlign = "center"; p.textBaseline = "middle";
@@ -29470,7 +29460,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
         }
         p.restore();
       }
-      // WindmillInfo on top
       if (Settings.WindmillInfo.enabled) {
         p.save();
         p.textAlign = "center"; p.textBaseline = "middle";
@@ -29490,7 +29479,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
         }
         p.restore();
       }
-      // OvenInfo on top
       if (Settings.OvenInfo.enabled) {
         p.save();
         p.textAlign = "center"; p.textBaseline = "middle";
@@ -29513,7 +29501,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
         }
         p.restore();
       }
-      // FurnaceInfo on top
       if (Settings.FurnaceInfo.enabled) {
         p.save();
         p.textAlign = "center"; p.textBaseline = "middle";
@@ -29528,7 +29515,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
         }
         p.restore();
       }
-      // BandageCounter HUD
       if (Settings.BandageCounter.enabled && m.ny && m.ny.XK) {
         var _bcCount = m.ny.XK[132] || 0;
         p.save();
@@ -29544,7 +29530,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
         }
         p.restore();
       }
-      // GhostInfo overlay
       if (Settings.GhostInfo.enabled && q && q.RZ) {
         var _giPlayers = q.bv[0];
         if (_giPlayers) {
@@ -30098,7 +30083,6 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     H = H > 1 ? 1 : H;
     if (A.xD) {
       A.TA();
-      // === LIST ENABLED HACKS ===
       if (Settings.ListEnabledHacks.enabled) {
         p.save();
         p.setTransform(1, 0, 0, 1, 0, 0);
@@ -33999,7 +33983,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     k[f.U4] = "Зимний Капюшон;Вы можете украсть что-то, если;- Ночь;- Вы ничего не носите;- Если вас не тронули в течение четырёх секунд;- Вы не рядом с огнём;- Вы не можете ничего украсть у крестьянской туники;Защищает от холода вне воды.".split(";");
     k[f._A] = ["Зимняя Крестьянская Туника", "Ваши растения растут быстрее", "Защищает от холода вне воды."];
     k[f.qi] = ["Акваланг", "Вы быстрее передвигаетесь по воде", "Тепло в воде", "Защита от игроков: 2, Защита от животных: 8"];
-    k[f.j4] = ["Супер Акваланг", "Вы очень быстро передвигаетесь по воде", "Тепло в воде", "Защита от игроков: 4, Защита от животных: 16"];
+    k[f.j4] = ["Супер Акваланг", "Вы очень быстро передвигаетесь по воде", "Тепло в воде", "Защита от игроков: 4, Защита от ж��вотных: 16"];
     k[f.Yt] = ["Шар Дракона", "Даётся за квест"];
     k[f.lV] = ["Сердце Дракона", "Превращает вас в призрака после смерти!", "Вы призрак на 60 секунд", "Найдите камень воскрешения"];
     k[f.tb] = ["Зелёный Драгоценный Камень", "Вы без читов, правильно?"];
@@ -34007,7 +33991,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     k[f.TZ] = ["Синий Драгоценный Камень", "Для очень добрых людей"];
     k[f.tY] = ["Зеленая корона", "Вы лечите себя очень быстро", "Лечит: 40", "Защита от игроков: 4, Защита от животных: 16"];
     k[f.jD] = ["Оранжевая Корона", "Вам очень повезло", "Защита от игроков: 4, Защита от животных: 16"];
-    k[f.fM] = ["Синяя Корона", "Как только вы умрёте, вы станете призраком", "Но вы потеряете своё оружие", "Защита от ��гроков: 4, Защита от животных: 16"];
+    k[f.fM] = ["Синяя Корона", "Как только вы умрёте, вы станете призраком", "Но вы потеряете своё оружие", "Защита от игроков: 4, Защита от животных: 16"];
     k[f.ye] = ["Ведро", "Используется для заполнения колодца", "Одно ведро равняется двенадцати бутылкам"];
     k[f.I_] = ["Пустое ведро", "Вам надо заполнить это ведро возле воды"];
     k[f.Ty] = ["Бутылка", "Позволяет пить воду в любом месте", "Вода: 50"];
@@ -34951,7 +34935,7 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
     k[f.zv] = ["Ohrwärmer", "Eine Art kleiner chapka.", "Hält dich warm außerhalb von Wasser und Winter"];
     k[f.Bq] = ["Chapka", "Auch Mantel genannt.", "Hält dich warm außerhalb von Wasser und Winter"];
     k[f.hj] = ["Winterschaal und Kappe", "Sehr angenehm", "Sehr Warm"];
-    k[f.XO] = ["Bauer", "Deine Pflanzen wachsen schneller", "Hält dich warm außerhalb von Wasser und Winter"];
+    k[f.XO] = ["Bauer", "Deine Pflanzen wachsen schneller", "H��lt dich warm außerhalb von Wasser und Winter"];
     k[f.U4] = "Winterkapuze;Du bist ein Wilder Schurke;Du kannst jemand bestehlen solange:;1) Es nacht ist;2) Du nichts trägst;3) dich niemand für vier Sekunden berührt hat;4) Du nicht in der Nähe eines Feuers bist;5) Dein Ziel keine Winterbauernkleidung trägt;Hält dich warm außerhalb von Wasser und Winter".split(";");
     k[f._A] = ["Winterbauern", "Deine Pflanzen wachsen deutlich schneller", "Hält dich warm außerhalb von Wasser und Winter"];
     k[f.qi] = ["Tauchermaske", "Du bist schneller im Wasser", "Hält dich warm im Wasser", "Verteidigung gegen Spieler: 2, Verteidigung gegen Tiere: 8"];
@@ -35422,11 +35406,9 @@ function _csId(allyId, enemyId, origId, ownerId, ent) {
   };
   m9 = [];
   
-// === COLORED SPIKE SPRITES (after m9 reset) ===
 var _csBaseUrl = "https://raw.githubusercontent.com/XmreLoux/For_require/main/images/";
 var _csNames = ["day-wood-spike-ally","day-wood-spike-enemy","day-stone-spike-ally","day-stone-spike-enemy","day-gold-spike-ally","day-gold-spike-enemy","day-diamond-spike-ally","day-diamond-spike-enemy","day-amethyst-spike-ally","day-amethyst-spike-enemy"];
 for (var _ci = 0; _ci < _csNames.length; _ci++) { m9[10000+_ci] = []; m9[10000+_ci][0] = new Image(); m9[10000+_ci][0].onerror = function() { this._broken = true; }; m9[10000+_ci][0].src = _csBaseUrl + _csNames[_ci] + ".png"; m9[10000+_ci][1] = m9[10000+_ci][0]; }
-// Game console killer DISABLED by mod:
 // var hb = I.console;
 //   hb.log = hb.info = hb.error = hb.warn = hb.debug = hb._Y = hb.trace = hb.time = hb.timeEnd = function () {};
 
@@ -66451,7 +66433,6 @@ for (var _ci = 0; _ci < _csNames.length; _ci++) { m9[10000+_ci] = []; m9[10000+_
       m.pM.update();
     };
     this.G3 = function (a, e, d, c, f) {
-        // === TIMER RESET HOOKS ===
         var _prevHp = m.G3.oF;
         var _newHp = a / 100;
         if (Math.floor(11 - (Date.now() - _Timers.HealTimer) / 1e3) < 5 || _newHp > _prevHp) {
@@ -66848,7 +66829,6 @@ for (var _ci = 0; _ci < _csNames.length; _ci++) { m9[10000+_ci] = []; m9[10000+_
             k = new Yb(r, k, n, t, u, f, l, h);
             q.RZ[p] = k;
             q.bv[r].push(k);
-// === OWNERSHIP TRACKING ===
 k._ukey = p;
 if (window._lastPlaceTime && Date.now() - window._lastPlaceTime < 2000) {
   var _tkMe = q.RZ[m.uo];
@@ -66888,7 +66868,6 @@ if (window._lastPlaceTime && Date.now() - window._lastPlaceTime < 2000) {
       }
     };
     this.GM = function (a) {
-        // === AUTOBOOK + AUTOCRAFT HOOK ===
         if (Settings.AutoBook.enabled) {
           var _me = q.RZ[m.uo];
           if (_me && _me.right != f.om && m.ny && m.ny.XK && m.ny.XK[f.om] > 0) {
@@ -68292,7 +68271,6 @@ if (window._lastPlaceTime && Date.now() - window._lastPlaceTime < 2000) {
     Ta = new zh(ia, p);
     q = new qh();
     m = new sh();
-// === GLOBAL EXPORTS ===
 window.USER = m;
 window.WORLD = q;
 window.CLIENT = FT;
@@ -68308,7 +68286,7 @@ window.send = function(data) {
   if (data && data[0] === 10) { window._lastPlaceTime = Date.now(); }
   if (FT && FT.rc && FT.rc.readyState === 1) {
     FT.rc.send(JSON.stringify(data));
-  } else { console.warn("[MOD] Cannot send: WebSocket not connected"); }
+  }
 };
 
     Fb.q5(function () {
@@ -68346,10 +68324,6 @@ window.send = function(data) {
   });
   var tc = 1;
 
-  // === MOD KEYBOARD CONTROLS ===
-  console.log("[MOD] Initializing engine...");
-
-  // === ANGLE CALCULATOR ===
   function _angleCalc(a, b) {
     var r = a + b;
     if (r > 254) r -= 254;
@@ -68357,7 +68331,6 @@ window.send = function(data) {
     return r;
   }
 
-  // === SPIKE/WALL ITEM LOOKUP (hardcoded IDs) ===
   var _placeItems = {
     "Amethyst Spike": 61,
     "Diamond Spike": 30,
@@ -68367,20 +68340,17 @@ window.send = function(data) {
     "Wood Wall": 16
   };
 
-  // === WEAPON CHECK FOR DROPSWORD ===
   function _isWeapon(itemId) {
     if (typeof C === "undefined" || !C[itemId] || !C[itemId].name) return false;
     var n = C[itemId].name.toLowerCase();
     return n.indexOf("sword") !== -1 || n.indexOf("spear") !== -1;
   }
 
-  // === CHAT GUARD: check if user is typing ===
   function _isTyping() {
     try { if (m && m.fq && m.fq.open) return true; } catch(e) {}
     return !!(document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA"));
   }
 
-  // === HIDE SCRIPT FUNCTION ===
   function _hideScript() {
     Settings.HideScript.active = !Settings.HideScript.active;
     if (Settings.HideScript.active) {
@@ -68392,7 +68362,6 @@ window.send = function(data) {
       if (window._guifyContainer) window._guifyContainer.style.display = "none";
       var _sEl = document.getElementById("shop_market"); if (_sEl) _sEl.style.opacity = "1";
       var _oEl = document.getElementById("option_in_game"); if (_oEl) _oEl.style.opacity = "1";
-      console.log("[MOD] Scripts HIDDEN");
     } else {
       if (Settings._backup) {
         for (var _rp in Settings._backup) { Settings[_rp].enabled = Settings._backup[_rp]; }
@@ -68401,22 +68370,18 @@ window.send = function(data) {
       if (window._guifyContainer) window._guifyContainer.style.display = "";
       var _sEl = document.getElementById("shop_market"); if (_sEl) _sEl.style.opacity = "0.6";
       var _oEl = document.getElementById("option_in_game"); if (_oEl) _oEl.style.opacity = "0.6";
-      console.log("[MOD] Scripts RESTORED");
     }
   }
 
-  // === UI OPACITY ===
   var _shopEl = document.getElementById("shop_market");
   var _optEl = document.getElementById("option_in_game");
   if (_shopEl) _shopEl.style.opacity = "0.6";
   if (_optEl) _optEl.style.opacity = "0.6";
 
-  // === MOD ENGINE LOOP ===
   var _modStamps = { AutoCraft: Date.now(), Bread: Date.now(), AutoSpike: Date.now(), AutoWall: Date.now(), AutoRecycle: Date.now(), AutoSteal: Date.now(), AutoFeed: Date.now(), AutoFire: Date.now(), AutoGarlic: Date.now(), AutoPlace: Date.now(), AutoCrown: Date.now() };
   window._crownReady = true;
   var _modKeysDown = {};
   window._modKeysDown = _modKeysDown;
-  // === BACKGROUND WORKER TIMER ===
   var _workerBlob = new Blob(["setInterval(function(){postMessage(1)},50)"], {type:"application/javascript"});
   var _modWorker = new Worker(URL.createObjectURL(_workerBlob));
   function _modEngine() {
@@ -68427,7 +68392,6 @@ window.send = function(data) {
     if (!_me) return;
     var stamp = Date.now();
     var pi2 = Math.PI * 2;
-    // AutoFeed - send eat packets directly when food/thirst low
     if (Settings.AutoFeed.enabled && m.G3 && stamp - _modStamps.AutoFeed > 200) {
       var _afInv = m.ny ? m.ny.XK : null;
       if (_afInv) {
@@ -68442,14 +68406,12 @@ window.send = function(data) {
         }
       }
     }
-    // AutoCraft (pause if food < 0.3 so AutoFeed can eat)
     if (Settings.AutoCraft.enabled && Settings.AutoCraft.last != null && stamp - _modStamps.AutoCraft > 60) {
       _modStamps.AutoCraft = stamp;
       if (!m.G3 || m.G3.SL >= 0.3) {
         window.send([7, Settings.AutoCraft.last]);
       }
     }
-    // === SMARTCRAFT ===
     if (Settings.SmartCraft.enabled && stamp - _modStamps.AutoCraft > 90) {
       var _scChain = null;
       switch (Settings.SmartCraft.select) {
@@ -68479,14 +68441,12 @@ window.send = function(data) {
       }
       _modStamps.AutoCraft = stamp;
     }
-    // AutoRecycle
     if (Settings.AutoRecycle.enabled && Settings.AutoRecycle.last != null) {
       if (stamp - _modStamps.AutoRecycle > 60) {
         window.send([29, Settings.AutoRecycle.last]);
         _modStamps.AutoRecycle = stamp;
       }
     }
-    // AutoGarlic (eat garlic every 5s to keep cold buff)
     if (Settings.AutoGarlic.enabled && stamp - _modStamps.AutoGarlic > 5000) {
       _modStamps.AutoGarlic = stamp;
       var _gInv = m.ny ? m.ny.XK : null;
@@ -68494,17 +68454,13 @@ window.send = function(data) {
         window._modEating = true; window.send([5, f.Ju]); clearTimeout(window._modEatTimer); window._modEatTimer = setTimeout(function(){ window._modEating = false; }, 500);
       }
     }
-    // AutoBread (sends 10 per packet max, like shift-click)
     if (stamp - _modStamps.Bread > 70) {
       _modStamps.Bread = stamp;
       if (Settings.AutoBreadPut.enabled) {
         var _bInv = m.ny ? m.ny.XK : null;
-        if (!_bInv) { if (stamp % 3000 < 100) console.log("[BreadPut] no inventory"); }
         if (_bInv) {
-          if (!m.Yc || !m.Yc.open) { if (!m.Sh || !m.Sh.open) { if (stamp % 3000 < 100) console.log("[BreadPut] no windmill/oven open"); } }
           if (m.Yc && m.Yc.open) {
             var _bWheat = _bInv[f.Lg] || 0;
-            if (stamp % 3000 < 100) { console.log("[BreadPut] f.Lg=" + f.Lg + " XK[f.Lg]=" + _bInv[f.Lg]); var _dbgItems = []; for (var _di = 0; _di < m.ny.Oh.length; _di++) { var _doh = m.ny.Oh[_di]; _dbgItems.push(_doh.id + ":" + (_bInv[_doh.id]||0)); } console.log("[BreadPut] inv=" + _dbgItems.join(",")); }
             var _bWCap = 255 - (m.Yc.sw || 0);
             while (_bWheat > 0 && _bWCap > 0) { var _bW = Math.min(_bWheat, _bWCap, 10); window.send([22, _bW, m.Yc.KG, m.Yc.WF]); _bWheat -= _bW; _bWCap -= _bW; }
           }
@@ -68529,7 +68485,6 @@ window.send = function(data) {
         }
       }
     }
-    // === AUTOSTEAL ===
     var _stHeld = Settings.AutoSteal.keyMode === "hold" ? _modKeysDown[Settings.AutoSteal.key] : Settings.AutoSteal.enabled;
     if (_stHeld && stamp - _modStamps.AutoSteal > 60) {
       var _stChests = q.bv[11];
@@ -68544,7 +68499,6 @@ window.send = function(data) {
       if (_stExtractors) { for (var _ei = 0; _ei < _stExtractors.length; _ei++) { if (_stExtractors[_ei] && UH.mz(_stExtractors[_ei], _me) <= 300) { window.send([30, _stExtractors[_ei].KG, _stExtractors[_ei].id]); } } }
       _modStamps.AutoSteal = stamp;
     }
-    // === AUTOWALL ===
     var _awHeld = Settings.AutoWall.keyMode === "hold" ? _modKeysDown[Settings.AutoWall.key] : Settings.AutoWall.enabled;
     if (_awHeld && stamp - _modStamps.AutoWall > 100) {
       var _awBest = null;
@@ -68564,7 +68518,6 @@ window.send = function(data) {
       }
       _modStamps.AutoWall = stamp;
     }
-    // === AUTOSPIKE ===
     var _asHeld = Settings.AutoSpike.keyMode === "hold" ? _modKeysDown[Settings.AutoSpike.key] : Settings.AutoSpike.enabled;
     if (_asHeld && stamp - _modStamps.AutoSpike > 80) {
       var _asBest = null;
@@ -68584,14 +68537,12 @@ window.send = function(data) {
       }
       _modStamps.AutoSpike = stamp;
     }
-    // === AUTOFIRE ===
     var _afireHeld = Settings.AutoFire.keyMode === "hold" ? _modKeysDown[Settings.AutoFire.key] : Settings.AutoFire.enabled;
     if (_afireHeld && stamp - _modStamps.AutoFire > 100) {
       var _afireAngle = Math.floor(255 * ((_me.angle + pi2) % pi2) / pi2);
       window.send([10, 11, _afireAngle, 0]);
       _modStamps.AutoFire = stamp;
     }
-    // === AUTOPLACE ===
     if (Settings.AutoPlace.enabled && stamp - _modStamps.AutoPlace > 100) {
       var _apMap = { "Bridge": f.CS, "Roof": f.E1, "Plot": f.iO };
       var _apId = _apMap[Settings.AutoPlace.mode];
@@ -68601,7 +68552,6 @@ window.send = function(data) {
       }
       _modStamps.AutoPlace = stamp;
     }
-    // === AUTOCROWN (auto-resurrect + equip) ===
     if (Settings.AutoCrown.enabled && m.v4 && m.v4.enabled && !window._acBusy && stamp - _modStamps.AutoCrown > 500) {
       var _acMe = q.RZ[m.uo];
       var _acStones = q.bv[22];
@@ -68624,7 +68574,6 @@ window.send = function(data) {
       }
       _modStamps.AutoCrown = stamp;
     }
-    // Macro playback (worker-driven, works in background tabs)
     if (Settings.Macro.playing && _macroTape.length) {
       var _mElapsed = Date.now() - _macroPlayT0;
       while (_macroPlayIdx < _macroTape.length && _macroTape[_macroPlayIdx].t <= _mElapsed) {
@@ -68641,68 +68590,53 @@ window.send = function(data) {
   window._gm = m;
   window._gFT = FT;
 
-  // === KEYBIND HANDLING (with chat guard) ===
   document.addEventListener("keydown", function(evt) {
     if (_isTyping()) return;
     _modKeysDown[evt.code] = true;
-    // HideScript toggle
     if (Settings.HideScript.key && evt.code === Settings.HideScript.key) {
       _hideScript();
       return;
     }
     if (Settings.HideScript.active) return;
-    // Drop Sword (only weapons)
     if (Settings.DropSword.key && evt.code === Settings.DropSword.key) {
       var _dsMe = q.RZ[m.uo];
       if (_dsMe && _dsMe.right != null && _dsMe.right > 0 && _isWeapon(_dsMe.right)) {
         window.send([6, _dsMe.right]);
-        console.log("[MOD] Dropped weapon: " + C[_dsMe.right].name);
       }
     }
     if (Settings.Xray.key && evt.code === Settings.Xray.key && Settings.Xray.keyMode === "press") {
       Settings.Xray.enabled = !Settings.Xray.enabled;
-      console.log("[MOD] Xray: " + (Settings.Xray.enabled ? "ON" : "OFF"));
     }
     if (Settings.AutoCraft.key && evt.code === Settings.AutoCraft.key && Settings.AutoCraft.keyMode === "press") {
       Settings.AutoCraft.enabled = !Settings.AutoCraft.enabled;
-      console.log("[MOD] AutoCraft: " + (Settings.AutoCraft.enabled ? "ON" : "OFF") + " last=" + Settings.AutoCraft.last);
     }
     if (Settings.AutoRecycle.key && evt.code === Settings.AutoRecycle.key && Settings.AutoRecycle.keyMode === "press") {
       Settings.AutoRecycle.enabled = !Settings.AutoRecycle.enabled;
-      console.log("[MOD] AutoRecycle: " + (Settings.AutoRecycle.enabled ? "ON" : "OFF") + " last=" + Settings.AutoRecycle.last);
     }
     if (Settings.AutoPlace.key && evt.code === Settings.AutoPlace.key) {
       Settings.AutoPlace.enabled = !Settings.AutoPlace.enabled;
-      console.log("[MOD] AutoPlace: " + (Settings.AutoPlace.enabled ? "ON" : "OFF") + " mode=" + Settings.AutoPlace.mode);
     }
     if (Settings.AutoBreadTake.key && evt.code === Settings.AutoBreadTake.key && Settings.AutoBreadTake.keyMode === "press") {
       Settings.AutoBreadTake.enabled = !Settings.AutoBreadTake.enabled;
-      console.log("[MOD] AutoBreadTake: " + (Settings.AutoBreadTake.enabled ? "ON" : "OFF"));
     }
     if (Settings.AutoBreadPut.key && evt.code === Settings.AutoBreadPut.key && Settings.AutoBreadPut.keyMode === "press") {
       Settings.AutoBreadPut.enabled = !Settings.AutoBreadPut.enabled;
-      console.log("[MOD] AutoBreadPut: " + (Settings.AutoBreadPut.enabled ? "ON" : "OFF"));
     }
     if (Settings.AutoSpike.key && evt.code === Settings.AutoSpike.key && Settings.AutoSpike.keyMode === "press") {
       Settings.AutoSpike.enabled = !Settings.AutoSpike.enabled;
-      console.log("[MOD] AutoSpike: " + (Settings.AutoSpike.enabled ? "ON" : "OFF"));
     }
     if (Settings.AutoWall.key && evt.code === Settings.AutoWall.key && Settings.AutoWall.keyMode === "press") {
       Settings.AutoWall.enabled = !Settings.AutoWall.enabled;
-      console.log("[MOD] AutoWall: " + (Settings.AutoWall.enabled ? "ON" : "OFF"));
     }
     if (Settings.SmartCraft.key && Settings.SmartCraft.key !== "NONE" && evt.code === Settings.SmartCraft.key && Settings.SmartCraft.keyMode === "press") {
       Settings.SmartCraft.enabled = !Settings.SmartCraft.enabled;
-      console.log("[MOD] SmartCraft: " + (Settings.SmartCraft.enabled ? "ON" : "OFF"));
     }
     if (Settings.Macro.key && evt.code === Settings.Macro.key) {
       if (Settings.Macro.recording) {
         Settings.Macro.recording = false;
-        console.log("[MOD] Macro stopped: " + _macroTape.length + " packets");
       } else {
         if (Settings.Macro.playing) { Settings.Macro.playing = false; }
         _macroTape = []; _macroT0 = Date.now(); Settings.Macro.recording = true;
-        console.log("[MOD] Macro recording...");
       }
     }
   });
@@ -68711,13 +68645,13 @@ window.send = function(data) {
     _modKeysDown[evt.code] = false;
   });
 
-  // === GUI (guify) ===
   var _guiScript = document.createElement("script");
   _guiScript.src = "https://unpkg.com/guify@0.12.0/lib/guify.min.js";
   _guiScript.onload = function() {
     function _initGui() {
     if (window._modBlocked) { setTimeout(_initGui, 500); return; }
     for (var prop in Settings) {
+      if (prop === "Tokens") continue;
       var saved = localStorage.getItem(prop + "MultiHack");
       if (saved) { try { var _parsed = JSON.parse(saved); if (typeof _parsed === "object" && _parsed !== null) { for (var _k in _parsed) { Settings[prop][_k] = _parsed[_k]; } } } catch(e) {} }
     }
@@ -68731,7 +68665,7 @@ window.send = function(data) {
     });
     window._guifyContainer = gui.container;
     if (!window._guifyContainer) { var _gd = document.querySelectorAll("div"); for (var _gi = _gd.length - 1; _gi >= 0; _gi--) { if (_gd[_gi].className && _gd[_gi].className.indexOf && _gd[_gi].className.indexOf("guify") !== -1) { window._guifyContainer = _gd[_gi]; break; } } }
-    function _saveSettings() { for (var prop in Settings) { localStorage.setItem(prop + "MultiHack", JSON.stringify(Settings[prop])); } }
+    function _saveSettings() { for (var prop in Settings) { if (prop === "Tokens") continue; localStorage.setItem(prop + "MultiHack", JSON.stringify(Settings[prop])); } }
     function _setKeybind(property) {
       if (!Settings[property] || Settings[property].key === undefined) return;
       Settings[property].key = "Press Any Key";
@@ -68818,7 +68752,6 @@ window.send = function(data) {
       { type: "display", label: "Macro Key", object: Settings.Macro, property: "key" },
       { type: "button", label: "Set Macro Key", action: function() { _setKeybind("Macro"); } }
     ], { folder: "Binds" });
-    // === SMARTCRAFT GUI ===
     gui.Register([
       { type: "checkbox", label: "SmartCraft", object: Settings.SmartCraft, property: "enabled", onChange: function() { _saveSettings(); } },
       { type: "display", label: "SmartCraft Key", object: Settings.SmartCraft, property: "key" },
@@ -68826,15 +68759,14 @@ window.send = function(data) {
       { type: "select", label: "SmartCraft Select", options: ["AMETHYST_SPIKE","DIAMOND_SPIKE","GOLD_SPIKE","STONE_SPIKE","AMETHYST_WALL","DIAMOND_WALL","GOLD_WALL","STONE_WALL"], object: Settings.SmartCraft, property: "select", onChange: function() { _saveSettings(); } },
       { type: "range", label: "CraftHowMuch", object: Settings.SmartCraft, property: "hm", min: 1, max: 500, step: 1, onChange: function() { _saveSettings(); } }
     ], { folder: "SmartCraft" });
-    // === TOKEN GUI ===
     gui.Register([
       { type: "button", label: "Copy Token", action: function() {
           var _tkStr = "```\nToken: " + (m.hF || "none") + "\nTokenID: " + (m.eY || "none") + "\n```";
           navigator.clipboard.writeText(_tkStr);
         }
       },
-      { type: "text", label: "Token", object: Settings.Tokens, property: "token", listenMode: "input", onChange: function(data) { m.hF = data; _saveSettings(); } },
-      { type: "text", label: "TokenID", object: Settings.Tokens, property: "tokenid", listenMode: "input", onChange: function(data) { m.eY = data; _saveSettings(); } }
+      { type: "text", label: "Token", object: Settings.Tokens, property: "token", listenMode: "input", onChange: function(data) { if (!_origToken && m.hF) _origToken = m.hF; if (data && data.length > 0) { m.hF = data; } else { if (_origToken) m.hF = _origToken; } } },
+      { type: "text", label: "TokenID", object: Settings.Tokens, property: "tokenid", listenMode: "input", onChange: function(data) { if (!_origTokenId && m.eY) _origTokenId = m.eY; if (data && data.length > 0) { m.eY = data; } else { if (_origTokenId) m.eY = _origTokenId; } } }
     ], { folder: "Tokens" });
     function _macroPlay() {
       if (!_macroTape.length) return;
@@ -68861,6 +68793,5 @@ window.send = function(data) {
     _initGui();
   }
   document.head.appendChild(_guiScript);
-  console.log("[MOD] Modded client loaded. Settings:", Settings);
   window.Settings = Settings;
 })();
